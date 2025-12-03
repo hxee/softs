@@ -1,0 +1,40 @@
+name: Auto Update Bucket
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # 每天 UTC 0点 (北京时间早8点)
+  workflow_dispatch:    # 允许手动点按钮触发
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # 必须开启写权限！
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run Worker Script
+        run: python scripts/worker.py
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "Scoop Bot"
+          git config --global user.email "bot@github.com"
+          git add bucket/*.json
+          # 如果有变动则提交，没变动则忽略
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-update manifests"
+            git push
+          fi
