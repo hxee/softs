@@ -1,10 +1,14 @@
 {
     "version": "3.8.2",
-    "description": "cc-switch auto-generated from farion1231/CC-Switch",
+    "description": "cc-switch from https://github.com/farion1231/cc-switch/releases/tag/v3.8.2",
     "homepage": "https://github.com/farion1231/cc-switch/releases/tag/v3.8.2",
     "license": "MIT",
-    "url": "https://github.com/farion1231/cc-switch/releases/download/v3.8.2/CC-Switch-v3.8.2-Windows-Portable.zip",
-    "hash": "e3ce5858347052a8f4166a65df65c0f56253a5fed5439ce2aa0a4cafb0d05ad9",
     "bin": "cc-switch.exe",
-    "checkver": "github"
+    "checkver": "github",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/farion1231/cc-switch/releases/download/v3.8.2/CC-Switch-v3.8.2-Windows-Portable.zip",
+            "hash": "e3ce5858347052a8f4166a65df65c0f56253a5fed5439ce2aa0a4cafb0d05ad9"
+        }
+    }
 }
