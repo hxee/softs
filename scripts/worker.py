@@ -18,8 +18,17 @@ def get_latest_release(repo):
         print(f"  [Error] API Request failed: {e}")
         return None
 
+def find_asset(assets):
+    # 优先级：zip > 7z > exe (优先选绿色版)
+    for ext in ['.zip', '.7z', '.exe']:
+        for asset in assets:
+            name = asset['name'].lower()
+            if 'windows' in name and name.endswith(ext) and '.sig' not in name:
+                return asset
+    return None
+
 def calc_hash(url):
-    print(f"  Downloading hash: {url} ...")
+    print(f"  Downloading for hash: {url} ...")
     try:
         resp = requests.get(url, stream=True)
         sha256 = hashlib.sha256()
@@ -27,69 +36,19 @@ def calc_hash(url):
             sha256.update(chunk)
         return sha256.hexdigest()
     except Exception as e:
-        print(f"  [Error] Hash calc failed: {e}")
+        print(f"  [Error] Hash calculation failed: {e}")
         return None
 
-def analyze_architecture(assets):
-    """
-    智能分析所有 Asset，按架构分类
-    返回结构: { '64bit': {'url':..., 'hash':...}, '32bit': ... }
-    """
-    arch_map = {}
-    
-    # 定义架构关键词匹配规则 (正则)
-    rules = [
-        ('64bit', r'(x64|amd64|win64)'),
-        ('32bit', r'(x86|win32)'),
-        ('arm64', r'(arm64)'),
-    ]
-
-    for asset in assets:
-        name = asset['name'].lower()
-        if not name.endswith('.zip') or 'windows' not in name or '.sig' in name:
-            continue
-            
-        url = asset['browser_download_url']
-        
-        # 匹配架构
-        for arch_name, pattern in rules:
-            if re.search(pattern, name):
-                print(f"  Found {arch_name} asset: {name}")
-                file_hash = calc_hash(url)
-                if file_hash:
-                    arch_map[arch_name] = {
-                        "url": url,
-                        "hash": file_hash
-                    }
-                break # 找到一种架构后就跳过后续匹配
-    
-    # 如果没匹配到任何具体架构，但有 zip，默认算作 64bit (兜底策略)
-    if not arch_map:
-        for asset in assets:
-            name = asset['name'].lower()
-            if name.endswith('.zip') and 'windows' in name and '.sig' not in name:
-                print(f"  Fallback to 64bit for: {name}")
-                file_hash = calc_hash(asset['browser_download_url'])
-                if file_hash:
-                    arch_map['64bit'] = {
-                        "url": asset['browser_download_url'],
-                        "hash": file_hash
-                    }
-                break
-
-    return arch_map
-
-def save_manifest(app_name, repo_data, arch_data):
-    version = repo_data['tag_name'].lstrip('v')
-    
+def save_manifest(app_name, version, description, homepage, url, file_hash):
     manifest = {
         "version": version,
-        "description": f"{app_name} from {repo_data['html_url']}",
-        "homepage": repo_data['html_url'],
+        "description": description,
+        "homepage": homepage,
         "license": "MIT",
+        "url": url,
+        "hash": file_hash,
         "bin": f"{app_name}.exe",
         "checkver": "github",
-        "architecture": arch_data  # 这里变成了结构化的数据
     }
     
     os.makedirs(BUCKET_DIR, exist_ok=True)
@@ -99,23 +58,48 @@ def save_manifest(app_name, repo_data, arch_data):
         json.dump(manifest, f, indent=4)
     print(f"  [Success] Saved {file_path}")
 
+# === 核心修改在这里 ===
 def main():
-    if not os.path.exists(CONFIG_FILE): return
+    if not os.path.exists(CONFIG_FILE):
+        print(f"Config file {CONFIG_FILE} not found.")
+        return
+
     with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
         apps = json.load(f)
 
     for app_name, repo in apps.items():
+        # 1. 获取最新 Release 信息
         data = get_latest_release(repo)
         if not data: continue
         
-        # 这一步变成了智能分析
-        arch_data = analyze_architecture(data['assets'])
+        latest_version = data['tag_name'].lstrip('v') # 去掉 v
         
-        if not arch_data:
-            print(f"  [Skip] No suitable assets found for {app_name}")
+        # 2. 【新增】检查本地是否有旧版本
+        local_file = os.path.join(BUCKET_DIR, f"{app_name}.json")
+        if os.path.exists(local_file):
+            try:
+                with open(local_file, 'r', encoding='utf-8') as f:
+                    local_manifest = json.load(f)
+                # 如果版本一样，直接跳过！
+                if local_manifest.get('version') == latest_version:
+                    print(f"  [Skip] {app_name} is already up to date ({latest_version})")
+                    continue
+            except:
+                pass # 如果读取本地文件出错，就当它不存在，继续更新
+
+        # 3. 如果版本不一样，或者本地没文件，才开始干重活（下载）
+        print(f"  [Update] Found new version: {latest_version}")
+        
+        asset = find_asset(data['assets'])
+        if not asset:
+            print(f"  [Skip] No suitable Windows asset found for {app_name}")
             continue
             
-        save_manifest(app_name, data, arch_data)
+        file_hash = calc_hash(asset['browser_download_url'])
+        if not file_hash: continue
+        
+        description = f"{app_name} auto-generated from {repo}"
+        save_manifest(app_name, latest_version, description, data['html_url'], asset['browser_download_url'], file_hash)
 
 if __name__ == "__main__":
     main()
