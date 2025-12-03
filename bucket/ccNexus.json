@@ -1,10 +1,18 @@
 {
     "version": "3.3.1",
-    "description": "ccNexus auto-generated from lich0821/ccNexus",
+    "description": "ccNexus from https://github.com/lich0821/ccNexus/releases/tag/v3.3.1",
     "homepage": "https://github.com/lich0821/ccNexus/releases/tag/v3.3.1",
     "license": "MIT",
-    "url": "https://github.com/lich0821/ccNexus/releases/download/v3.3.1/ccNexus-v3.3.1-windows-amd64.zip",
-    "hash": "e051c779b006bb6c64f3c0bc910cc77586fb996ea6275bcb2cb2076fc384bb2f",
     "bin": "ccNexus.exe",
-    "checkver": "github"
+    "checkver": "github",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/lich0821/ccNexus/releases/download/v3.3.1/ccNexus-v3.3.1-windows-amd64.zip",
+            "hash": "e051c779b006bb6c64f3c0bc910cc77586fb996ea6275bcb2cb2076fc384bb2f"
+        },
+        "arm64": {
+            "url": "https://github.com/lich0821/ccNexus/releases/download/v3.3.1/ccNexus-v3.3.1-windows-arm64.zip",
+            "hash": "6b3f781647c10cf53140566d4e4cb83cc88cba169ff5606e6bace0e31f1da6a4"
+        }
+    }
 }
