@@ -4,12 +4,10 @@ import hashlib
 import os
 import re
 
-# === 配置区域 ===
 CONFIG_FILE = 'soft.json'
 BUCKET_DIR = 'bucket'
 
 def get_latest_release(repo):
-    """获取 GitHub 最新 Release"""
     url = f"https://api.github.com/repos/{repo}/releases/latest"
     print(f"Checking {repo}...")
     try:
@@ -20,20 +18,8 @@ def get_latest_release(repo):
         print(f"  [Error] API Request failed: {e}")
         return None
 
-def find_asset(assets):
-    """智能寻找 Windows 压缩包"""
-    # 优先级：zip > 7z > exe (优先选绿色版)
-    for ext in ['.zip', '.7z', '.exe']:
-        for asset in assets:
-            name = asset['name'].lower()
-            # 必须包含 windows 关键字，且符合后缀，排除 sig 签名文件
-            if 'windows' in name and name.endswith(ext) and '.sig' not in name:
-                return asset
-    return None
-
 def calc_hash(url):
-    """下载并计算 SHA256 (机器人干这事很快)"""
-    print(f"  Downloading for hash: {url} ...")
+    print(f"  Downloading hash: {url} ...")
     try:
         resp = requests.get(url, stream=True)
         sha256 = hashlib.sha256()
@@ -41,20 +27,69 @@ def calc_hash(url):
             sha256.update(chunk)
         return sha256.hexdigest()
     except Exception as e:
-        print(f"  [Error] Hash calculation failed: {e}")
+        print(f"  [Error] Hash calc failed: {e}")
         return None
 
-def save_manifest(app_name, version, description, homepage, url, file_hash):
-    """生成并保存 JSON 文件"""
+def analyze_architecture(assets):
+    """
+    智能分析所有 Asset，按架构分类
+    返回结构: { '64bit': {'url':..., 'hash':...}, '32bit': ... }
+    """
+    arch_map = {}
+    
+    # 定义架构关键词匹配规则 (正则)
+    rules = [
+        ('64bit', r'(x64|amd64|win64)'),
+        ('32bit', r'(x86|win32)'),
+        ('arm64', r'(arm64)'),
+    ]
+
+    for asset in assets:
+        name = asset['name'].lower()
+        if not name.endswith('.zip') or 'windows' not in name or '.sig' in name:
+            continue
+            
+        url = asset['browser_download_url']
+        
+        # 匹配架构
+        for arch_name, pattern in rules:
+            if re.search(pattern, name):
+                print(f"  Found {arch_name} asset: {name}")
+                file_hash = calc_hash(url)
+                if file_hash:
+                    arch_map[arch_name] = {
+                        "url": url,
+                        "hash": file_hash
+                    }
+                break # 找到一种架构后就跳过后续匹配
+    
+    # 如果没匹配到任何具体架构，但有 zip，默认算作 64bit (兜底策略)
+    if not arch_map:
+        for asset in assets:
+            name = asset['name'].lower()
+            if name.endswith('.zip') and 'windows' in name and '.sig' not in name:
+                print(f"  Fallback to 64bit for: {name}")
+                file_hash = calc_hash(asset['browser_download_url'])
+                if file_hash:
+                    arch_map['64bit'] = {
+                        "url": asset['browser_download_url'],
+                        "hash": file_hash
+                    }
+                break
+
+    return arch_map
+
+def save_manifest(app_name, repo_data, arch_data):
+    version = repo_data['tag_name'].lstrip('v')
+    
     manifest = {
         "version": version,
-        "description": description,
-        "homepage": homepage,
+        "description": f"{app_name} from {repo_data['html_url']}",
+        "homepage": repo_data['html_url'],
         "license": "MIT",
-        "url": url,
-        "hash": file_hash,
-        "bin": f"{app_name}.exe", # 默认假设 exe 名字和软件名一致
+        "bin": f"{app_name}.exe",
         "checkver": "github",
+        "architecture": arch_data  # 这里变成了结构化的数据
     }
     
     os.makedirs(BUCKET_DIR, exist_ok=True)
@@ -65,32 +100,22 @@ def save_manifest(app_name, version, description, homepage, url, file_hash):
     print(f"  [Success] Saved {file_path}")
 
 def main():
-    if not os.path.exists(CONFIG_FILE):
-        print(f"Config file {CONFIG_FILE} not found.")
-        return
-
+    if not os.path.exists(CONFIG_FILE): return
     with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
         apps = json.load(f)
 
     for app_name, repo in apps.items():
-        # 1. 获取信息
         data = get_latest_release(repo)
         if not data: continue
         
-        # 2. 找文件
-        asset = find_asset(data['assets'])
-        if not asset:
-            print(f"  [Skip] No suitable Windows asset found for {app_name}")
+        # 这一步变成了智能分析
+        arch_data = analyze_architecture(data['assets'])
+        
+        if not arch_data:
+            print(f"  [Skip] No suitable assets found for {app_name}")
             continue
             
-        # 3. 算 Hash
-        file_hash = calc_hash(asset['browser_download_url'])
-        if not file_hash: continue
-        
-        # 4. 生成文件
-        version = data['tag_name'].lstrip('v') # 去掉 v 前缀
-        description = f"{app_name} auto-generated from {repo}"
-        save_manifest(app_name, version, description, data['html_url'], asset['browser_download_url'], file_hash)
+        save_manifest(app_name, data, arch_data)
 
 if __name__ == "__main__":
     main()
