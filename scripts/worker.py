@@ -7,30 +7,102 @@ import re
 CONFIG_FILE = 'soft.json'
 BUCKET_DIR = 'bucket'
 
+# 架构关键词映射
+ARCH_PATTERNS = {
+    '64bit': ['amd64', 'x86_64', 'x64', 'win64'],
+    'arm64': ['arm64', 'aarch64'],
+    '32bit': ['386', 'i386', 'x86', 'win32']
+}
+
+def get_github_headers():
+    """获取 GitHub API 请求头，支持 Token 认证"""
+    headers = {'Accept': 'application/vnd.github.v3+json'}
+    token = os.environ.get('GITHUB_TOKEN')
+    if token:
+        headers['Authorization'] = f'token {token}'
+    return headers
+
+def get_repo_info(repo):
+    """获取仓库基本信息（description, license 等）"""
+    url = f"https://api.github.com/repos/{repo}"
+    try:
+        resp = requests.get(url, headers=get_github_headers())
+        resp.raise_for_status()
+        return resp.json()
+    except Exception as e:
+        print(f"  [Warn] Failed to get repo info: {e}")
+        return None
+
 def get_latest_release(repo):
+    """获取最新 Release 信息"""
     url = f"https://api.github.com/repos/{repo}/releases/latest"
     print(f"Checking {repo}...")
     try:
-        resp = requests.get(url)
+        resp = requests.get(url, headers=get_github_headers())
         resp.raise_for_status()
         return resp.json()
     except Exception as e:
         print(f"  [Error] API Request failed: {e}")
         return None
 
-def find_asset(assets):
-    # 优先级：zip > 7z > exe (优先选绿色版)
-    for ext in ['.zip', '.7z', '.exe']:
-        for asset in assets:
-            name = asset['name'].lower()
-            if 'windows' in name and name.endswith(ext) and '.sig' not in name:
-                return asset
+def detect_arch(filename):
+    """检测文件对应的架构"""
+    name = filename.lower()
+    for arch, patterns in ARCH_PATTERNS.items():
+        for pattern in patterns:
+            if pattern in name:
+                return arch
     return None
 
+def is_valid_asset(asset):
+    """检查是否为有效的 Windows 安装包"""
+    name = asset['name'].lower()
+    # 排除签名文件、校验和文件、源码包
+    excluded = ['.sig', '.asc', '.sha256', '.md5', 'source', 'src', 'linux', 'darwin', 'macos']
+    if any(ex in name for ex in excluded):
+        return False
+    # 必须是压缩包或可执行文件
+    valid_ext = ['.zip', '.7z', '.exe', '.msi']
+    if not any(name.endswith(ext) for ext in valid_ext):
+        return False
+    # 优先检测是否明确标注 Windows
+    if 'windows' in name or 'win' in name:
+        return True
+    # 如果没有明确标注系统，但也没有其他系统标识，可能是通用包
+    return True
+
+def find_assets_by_arch(assets):
+    """按架构分类查找资产，返回 {arch: asset} 字典"""
+    result = {}
+    
+    # 优先级：zip > 7z > exe > msi
+    ext_priority = ['.zip', '.7z', '.exe', '.msi']
+    
+    valid_assets = [a for a in assets if is_valid_asset(a)]
+    
+    for asset in valid_assets:
+        arch = detect_arch(asset['name'])
+        if not arch:
+            # 如果无法检测架构，默认为 64bit
+            arch = '64bit'
+        
+        # 如果该架构已有资产，比较优先级
+        if arch in result:
+            current_ext = next((e for e in ext_priority if result[arch]['name'].lower().endswith(e)), None)
+            new_ext = next((e for e in ext_priority if asset['name'].lower().endswith(e)), None)
+            if ext_priority.index(new_ext) < ext_priority.index(current_ext):
+                result[arch] = asset
+        else:
+            result[arch] = asset
+    
+    return result
+
 def calc_hash(url):
+    """下载文件并计算 SHA256"""
     print(f"  Downloading for hash: {url} ...")
     try:
-        resp = requests.get(url, stream=True)
+        resp = requests.get(url, stream=True, headers=get_github_headers())
+        resp.raise_for_status()
         sha256 = hashlib.sha256()
         for chunk in resp.iter_content(8192):
             sha256.update(chunk)
@@ -39,26 +111,53 @@ def calc_hash(url):
         print(f"  [Error] Hash calculation failed: {e}")
         return None
 
-def save_manifest(app_name, version, description, homepage, url, file_hash):
+def build_autoupdate(repo, arch_assets):
+    """构建 autoupdate 配置"""
+    autoupdate = {"architecture": {}}
+    
+    for arch, asset in arch_assets.items():
+        # 将版本号替换为 $version 占位符
+        url_template = re.sub(r'v?\d+\.\d+\.\d+', '$version', asset['browser_download_url'])
+        autoupdate["architecture"][arch] = {"url": url_template}
+    
+    return autoupdate
+
+def save_manifest(app_name, version, description, homepage, license_name, arch_assets, repo):
+    """保存 Scoop manifest 文件"""
     manifest = {
         "version": version,
         "description": description,
         "homepage": homepage,
-        "license": "MIT",
-        "url": url,
-        "hash": file_hash,
+        "license": license_name,
+        "architecture": {},
         "bin": f"{app_name}.exe",
         "checkver": "github",
+        "autoupdate": build_autoupdate(repo, arch_assets)
     }
+    
+    # 为每个架构添加 url 和 hash
+    for arch, asset in arch_assets.items():
+        file_hash = calc_hash(asset['browser_download_url'])
+        if not file_hash:
+            print(f"  [Error] Failed to calculate hash for {arch}")
+            continue
+        manifest["architecture"][arch] = {
+            "url": asset['browser_download_url'],
+            "hash": file_hash
+        }
+    
+    if not manifest["architecture"]:
+        print(f"  [Error] No valid assets found for {app_name}")
+        return False
     
     os.makedirs(BUCKET_DIR, exist_ok=True)
     file_path = os.path.join(BUCKET_DIR, f"{app_name}.json")
     
     with open(file_path, 'w', encoding='utf-8') as f:
-        json.dump(manifest, f, indent=4)
+        json.dump(manifest, f, indent=4, ensure_ascii=False)
     print(f"  [Success] Saved {file_path}")
+    return True
 
-# === 核心修改在这里 ===
 def main():
     if not os.path.exists(CONFIG_FILE):
         print(f"Config file {CONFIG_FILE} not found.")
@@ -69,37 +168,44 @@ def main():
 
     for app_name, repo in apps.items():
         # 1. 获取最新 Release 信息
-        data = get_latest_release(repo)
-        if not data: continue
+        release_data = get_latest_release(repo)
+        if not release_data:
+            continue
         
-        latest_version = data['tag_name'].lstrip('v') # 去掉 v
+        latest_version = release_data['tag_name'].lstrip('v')
         
-        # 2. 【新增】检查本地是否有旧版本
+        # 2. 检查本地版本
         local_file = os.path.join(BUCKET_DIR, f"{app_name}.json")
         if os.path.exists(local_file):
             try:
                 with open(local_file, 'r', encoding='utf-8') as f:
                     local_manifest = json.load(f)
-                # 如果版本一样，直接跳过！
                 if local_manifest.get('version') == latest_version:
                     print(f"  [Skip] {app_name} is already up to date ({latest_version})")
                     continue
             except:
-                pass # 如果读取本地文件出错，就当它不存在，继续更新
-
-        # 3. 如果版本不一样，或者本地没文件，才开始干重活（下载）
+                pass
+        
         print(f"  [Update] Found new version: {latest_version}")
         
-        asset = find_asset(data['assets'])
-        if not asset:
+        # 3. 获取仓库信息
+        repo_info = get_repo_info(repo)
+        description = repo_info.get('description', f'{app_name} - auto-generated') if repo_info else f'{app_name} - auto-generated'
+        homepage = f"https://github.com/{repo}"
+        license_name = 'Unknown'
+        if repo_info and repo_info.get('license'):
+            license_name = repo_info['license'].get('spdx_id', 'Unknown')
+        
+        # 4. 查找多架构资产
+        arch_assets = find_assets_by_arch(release_data['assets'])
+        if not arch_assets:
             print(f"  [Skip] No suitable Windows asset found for {app_name}")
             continue
-            
-        file_hash = calc_hash(asset['browser_download_url'])
-        if not file_hash: continue
         
-        description = f"{app_name} auto-generated from {repo}"
-        save_manifest(app_name, latest_version, description, data['html_url'], asset['browser_download_url'], file_hash)
+        print(f"  [Info] Found architectures: {list(arch_assets.keys())}")
+        
+        # 5. 保存 manifest
+        save_manifest(app_name, latest_version, description, homepage, license_name, arch_assets, repo)
 
 if __name__ == "__main__":
     main()

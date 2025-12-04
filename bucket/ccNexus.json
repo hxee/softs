@@ -1,18 +1,28 @@
 {
-    "version": "3.3.1",
-    "description": "ccNexus from https://github.com/lich0821/ccNexus/releases/tag/v3.3.1",
-    "homepage": "https://github.com/lich0821/ccNexus/releases/tag/v3.3.1",
+    "version": "3.4.1",
+    "description": "Intelligent API gateway for Claude Code - rotate endpoints, monitor usage, and seamlessly integrate OpenAI, Gemini, and other platforms.",
+    "homepage": "https://github.com/lich0821/ccNexus",
     "license": "MIT",
-    "bin": "ccNexus.exe",
-    "checkver": "github",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/lich0821/ccNexus/releases/download/v3.3.1/ccNexus-v3.3.1-windows-amd64.zip",
-            "hash": "e051c779b006bb6c64f3c0bc910cc77586fb996ea6275bcb2cb2076fc384bb2f"
+            "url": "https://github.com/lich0821/ccNexus/releases/download/v3.4.1/ccNexus-v3.4.1-windows-amd64.zip",
+            "hash": "4fbc104ca1f19af5607de12868eaf06c71f8c0684d10f50b2db374bc398cc7c8"
         },
         "arm64": {
-            "url": "https://github.com/lich0821/ccNexus/releases/download/v3.3.1/ccNexus-v3.3.1-windows-arm64.zip",
-            "hash": "6b3f781647c10cf53140566d4e4cb83cc88cba169ff5606e6bace0e31f1da6a4"
+            "url": "https://github.com/lich0821/ccNexus/releases/download/v3.4.1/ccNexus-v3.4.1-windows-arm64.zip",
+            "hash": "6b6b1626230aa5d8dac77258bb1f3cef5c5cd2ab066ebd7a2b517844a38b386d"
+        }
+    },
+    "bin": "ccNexus.exe",
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/lich0821/ccNexus/releases/download/$version/ccNexus-$version-windows-amd64.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/lich0821/ccNexus/releases/download/$version/ccNexus-$version-windows-arm64.zip"
+            }
         }
     }
 }

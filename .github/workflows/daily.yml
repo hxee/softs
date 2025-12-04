@@ -24,6 +24,8 @@ jobs:
         run: pip install requests
 
       - name: Run Worker Script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/worker.py
 
       - name: Commit and Push
