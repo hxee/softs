@@ -6,6 +6,7 @@ import re
 
 CONFIG_FILE = 'soft.json'
 BUCKET_DIR = 'bucket'
+README_FILE = 'README.md'
 
 # 架构关键词映射
 ARCH_PATTERNS = {
@@ -158,6 +159,44 @@ def save_manifest(app_name, version, description, homepage, license_name, arch_a
     print(f"  [Success] Saved {file_path}")
     return True
 
+def update_readme(app_info_list):
+    """
+    更新 README.md 中的软件列表表格
+    app_info_list: [(app_name, repo, description), ...]
+    """
+    if not os.path.exists(README_FILE):
+        print(f"  [Warn] {README_FILE} not found, skipping README update")
+        return
+    
+    with open(README_FILE, 'r', encoding='utf-8') as f:
+        content = f.read()
+    
+    # 构建新的软件列表表格
+    table_header = "| 软件 | 仓库 | 说明 |\n|------|------|------|\n"
+    table_rows = []
+    for app_name, repo, description in app_info_list:
+        # 截断过长的描述
+        if description and len(description) > 50:
+            description = description[:47] + "..."
+        desc = description or f"{app_name} 工具"
+        table_rows.append(f"| {app_name} | [{repo}](https://github.com/{repo}) | {desc} |")
+    
+    new_table = table_header + "\n".join(table_rows)
+    
+    # 使用正则表达式替换软件列表表格
+    # 匹配 "## 软件列表" 后的表格，直到遇到空行后的下一个标题或文件结尾
+    pattern = r'(## 软件列表\s*\n+)(\|[^\n]+\|\s*\n)+(\s*)'
+    replacement = r'\g<1>' + new_table + '\n\n'
+    
+    new_content = re.sub(pattern, replacement, content)
+    
+    if new_content != content:
+        with open(README_FILE, 'w', encoding='utf-8') as f:
+            f.write(new_content)
+        print(f"  [Success] Updated {README_FILE}")
+    else:
+        print(f"  [Skip] {README_FILE} is already up to date")
+
 def main():
     if not os.path.exists(CONFIG_FILE):
         print(f"Config file {CONFIG_FILE} not found.")
@@ -166,15 +205,25 @@ def main():
     with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
         apps = json.load(f)
 
+    # 收集所有软件信息用于更新 README
+    app_info_list = []
+
     for app_name, repo in apps.items():
-        # 1. 获取最新 Release 信息
+        # 1. 获取仓库信息（用于 README 和 manifest）
+        repo_info = get_repo_info(repo)
+        description = repo_info.get('description', f'{app_name} - auto-generated') if repo_info else f'{app_name} - auto-generated'
+        
+        # 收集软件信息
+        app_info_list.append((app_name, repo, description))
+        
+        # 2. 获取最新 Release 信息
         release_data = get_latest_release(repo)
         if not release_data:
             continue
         
         latest_version = release_data['tag_name'].lstrip('v')
         
-        # 2. 检查本地版本
+        # 3. 检查本地版本
         local_file = os.path.join(BUCKET_DIR, f"{app_name}.json")
         if os.path.exists(local_file):
             try:
@@ -188,15 +237,13 @@ def main():
         
         print(f"  [Update] Found new version: {latest_version}")
         
-        # 3. 获取仓库信息
-        repo_info = get_repo_info(repo)
-        description = repo_info.get('description', f'{app_name} - auto-generated') if repo_info else f'{app_name} - auto-generated'
+        # 4. 获取其他仓库信息
         homepage = f"https://github.com/{repo}"
         license_name = 'Unknown'
         if repo_info and repo_info.get('license'):
             license_name = repo_info['license'].get('spdx_id', 'Unknown')
         
-        # 4. 查找多架构资产
+        # 5. 查找多架构资产
         arch_assets = find_assets_by_arch(release_data['assets'])
         if not arch_assets:
             print(f"  [Skip] No suitable Windows asset found for {app_name}")
@@ -204,8 +251,13 @@ def main():
         
         print(f"  [Info] Found architectures: {list(arch_assets.keys())}")
         
-        # 5. 保存 manifest
+        # 6. 保存 manifest
         save_manifest(app_name, latest_version, description, homepage, license_name, arch_assets, repo)
+    
+    # 更新 README.md 软件列表
+    if app_info_list:
+        print("\nUpdating README.md...")
+        update_readme(app_info_list)
 
 if __name__ == "__main__":
     main()

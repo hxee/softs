@@ -32,7 +32,7 @@ jobs:
         run: |
           git config --global user.name "Scoop Bot"
           git config --global user.email "bot@github.com"
-          git add bucket/*.json
+          git add bucket/*.json README.md
           # 如果有变动则提交，没变动则忽略
           if git diff --staged --quiet; then
             echo "No changes to commit"

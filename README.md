@@ -6,8 +6,9 @@
 
 | 软件 | 仓库 | 说明 |
 |------|------|------|
-| ccNexus | [lich0821/ccNexus](https://github.com/lich0821/ccNexus) | ccNexus 工具 |
-| cc-switch | [farion1231/CC-Switch](https://github.com/farion1231/CC-Switch) | CC-Switch 切换工具 |
+| ccNexus | [lich0821/ccNexus](https://github.com/lich0821/ccNexus) | Intelligent API gateway for Claude Code - rotat... |
+| code-switch-R | [Rogers-F/code-switch-R](https://github.com/Rogers-F/code-switch-R) | Claude Code & Codex 多供应商代理与管理工具 |
+| cc-switch | [farion1231/CC-Switch](https://github.com/farion1231/CC-Switch) | A cross-platform desktop All-in-One assistant t... |
 
 ## 如何使用
 
@@ -19,13 +20,11 @@
 2. 安装软件：
    ```powershell
    scoop install my-tools/ccNexus
-   scoop install my-tools/cc-switch
    ```
 
 3. 更新软件：
    ```powershell
    scoop update ccNexus
-   scoop update cc-switch
    ```
 
 ## 自动更新
