@@ -1,12 +1,12 @@
 {
-    "version": "1.1.4",
+    "version": "1.1.5",
     "description": "一个使用符号链接迁移大型目录的 Windows 工具，快速将文件夹迁移到其他磁盘，且保留原路径，使程序正常运行，解决原磁盘空间不足的问题",
     "homepage": "https://github.com/zhao-wuyan/directory-migration-tool",
     "license": "MIT",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/zhao-wuyan/directory-migration-tool/releases/download/v1.1.4/directory-migration-tool-v1.1.4-lite.exe",
-            "hash": "553d519e119d8ad52f2526aa09e2c5af51c6b099e6a6eea40f3af48b2059fc02"
+            "url": "https://github.com/zhao-wuyan/directory-migration-tool/releases/download/v1.1.5/directory-migration-tool-v1.1.5-lite.exe",
+            "hash": "a02dbfdf05d5c879046c76ea37b02bc1a5e5b5ba6a5ba80e724aea0d05a760c7"
         }
     },
     "bin": "directory-migration-tool.exe",
