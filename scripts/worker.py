@@ -8,6 +8,9 @@ CONFIG_FILE = 'soft.json'
 BUCKET_DIR = 'bucket'
 README_FILE = 'README.md'
 
+# 特例名单 (保留空字典以防代码报错，未来有其他硬编码需求可填入)
+BIN_MAP = {}
+
 # 架构关键词映射
 ARCH_PATTERNS = {
     '64bit': ['amd64', 'x86_64', 'x64', 'win64'],
@@ -24,7 +27,7 @@ def get_github_headers():
     return headers
 
 def get_repo_info(repo):
-    """获取仓库基本信息（description, license 等）"""
+    """获取仓库基本信息"""
     url = f"https://api.github.com/repos/{repo}"
     try:
         resp = requests.get(url, headers=get_github_headers())
@@ -58,25 +61,19 @@ def detect_arch(filename):
 def is_valid_asset(asset):
     """检查是否为有效的 Windows 安装包"""
     name = asset['name'].lower()
-    # 排除签名文件、校验和文件、源码包
-    excluded = ['.sig', '.asc', '.sha256', '.md5', 'source', 'src', 'linux', 'darwin', 'macos']
+    excluded = ['.sig', '.asc', '.sha256', '.md5', 'source', 'src', 'linux', 'darwin', 'macos', 'android']
     if any(ex in name for ex in excluded):
         return False
-    # 必须是压缩包或可执行文件
     valid_ext = ['.zip', '.7z', '.exe', '.msi']
     if not any(name.endswith(ext) for ext in valid_ext):
         return False
-    # 优先检测是否明确标注 Windows
     if 'windows' in name or 'win' in name:
         return True
-    # 如果没有明确标注系统，但也没有其他系统标识，可能是通用包
-    return True
+    return True 
 
 def find_assets_by_arch(assets):
-    """按架构分类查找资产，返回 {arch: asset} 字典"""
+    """按架构分类查找资产"""
     result = {}
-    
-    # 优先级：zip > 7z > exe > msi
     ext_priority = ['.zip', '.7z', '.exe', '.msi']
     
     valid_assets = [a for a in assets if is_valid_asset(a)]
@@ -84,14 +81,12 @@ def find_assets_by_arch(assets):
     for asset in valid_assets:
         arch = detect_arch(asset['name'])
         if not arch:
-            # 如果无法检测架构，默认为 64bit
-            arch = '64bit'
+            arch = '64bit' # 默认 64位
         
-        # 如果该架构已有资产，比较优先级
         if arch in result:
             current_ext = next((e for e in ext_priority if result[arch]['name'].lower().endswith(e)), None)
             new_ext = next((e for e in ext_priority if asset['name'].lower().endswith(e)), None)
-            if ext_priority.index(new_ext) < ext_priority.index(current_ext):
+            if new_ext and current_ext and ext_priority.index(new_ext) < ext_priority.index(current_ext):
                 result[arch] = asset
         else:
             result[arch] = asset
@@ -112,43 +107,38 @@ def calc_hash(url):
         print(f"  [Error] Hash calculation failed: {e}")
         return None
 
-def build_autoupdate(repo, arch_assets):
-    """构建 autoupdate 配置"""
-    autoupdate = {"architecture": {}}
-    
-    for arch, asset in arch_assets.items():
-        # 将版本号替换为 $version 占位符
-        url_template = re.sub(r'v?\d+\.\d+\.\d+', '$version', asset['browser_download_url'])
-        autoupdate["architecture"][arch] = {"url": url_template}
-    
-    return autoupdate
-
-def save_manifest(app_name, version, description, homepage, license_name, arch_assets, repo):
+def save_manifest(app_name, version, description, homepage, license_name, arch_assets, bin_override):
     """保存 Scoop manifest 文件"""
+    
+    # 确定 bin 字段: 优先使用 soft.json 里的 override
+    final_bin = bin_override if bin_override else f"{app_name}.exe"
+
     manifest = {
         "version": version,
         "description": description,
         "homepage": homepage,
         "license": license_name,
-        "architecture": {},
-        "bin": f"{app_name}.exe",
+        "bin": final_bin,
         "checkver": "github",
-        "autoupdate": build_autoupdate(repo, arch_assets)
+        "architecture": {}
     }
     
-    # 为每个架构添加 url 和 hash
+    # 完全基于 architecture 生成，不设置顶层 url/hash
+    has_valid_arch = False
     for arch, asset in arch_assets.items():
         file_hash = calc_hash(asset['browser_download_url'])
         if not file_hash:
             print(f"  [Error] Failed to calculate hash for {arch}")
             continue
+            
         manifest["architecture"][arch] = {
             "url": asset['browser_download_url'],
             "hash": file_hash
         }
+        has_valid_arch = True
     
-    if not manifest["architecture"]:
-        print(f"  [Error] No valid assets found for {app_name}")
+    if not has_valid_arch:
+        print(f"  [Error] No valid assets processed for {app_name}")
         return False
     
     os.makedirs(BUCKET_DIR, exist_ok=True)
@@ -160,42 +150,33 @@ def save_manifest(app_name, version, description, homepage, license_name, arch_a
     return True
 
 def update_readme(app_info_list):
-    """
-    更新 README.md 中的软件列表表格
-    app_info_list: [(app_name, repo, description), ...]
-    """
+    """更新 README.md"""
     if not os.path.exists(README_FILE):
-        print(f"  [Warn] {README_FILE} not found, skipping README update")
         return
     
     with open(README_FILE, 'r', encoding='utf-8') as f:
         content = f.read()
     
-    # 构建新的软件列表表格
     table_header = "| 软件 | 仓库 | 说明 |\n|------|------|------|\n"
     table_rows = []
     for app_name, repo, description in app_info_list:
-        # 截断过长的描述
         if description and len(description) > 50:
             description = description[:47] + "..."
         desc = description or f"{app_name} 工具"
         table_rows.append(f"| {app_name} | [{repo}](https://github.com/{repo}) | {desc} |")
     
     new_table = table_header + "\n".join(table_rows)
-    
-    # 使用正则表达式替换软件列表表格
-    # 匹配 "## 软件列表" 后的表格，直到遇到空行后的下一个标题或文件结尾
     pattern = r'(## 软件列表\s*\n+)(\|[^\n]+\|\s*\n)+(\s*)'
     replacement = r'\g<1>' + new_table + '\n\n'
     
-    new_content = re.sub(pattern, replacement, content)
-    
-    if new_content != content:
-        with open(README_FILE, 'w', encoding='utf-8') as f:
-            f.write(new_content)
-        print(f"  [Success] Updated {README_FILE}")
-    else:
-        print(f"  [Skip] {README_FILE} is already up to date")
+    try:
+        new_content = re.sub(pattern, replacement, content)
+        if new_content != content:
+            with open(README_FILE, 'w', encoding='utf-8') as f:
+                f.write(new_content)
+            print(f"  [Success] Updated {README_FILE}")
+    except Exception as e:
+        print(f"  [Warn] README update failed: {e}")
 
 def main():
     if not os.path.exists(CONFIG_FILE):
@@ -205,25 +186,30 @@ def main():
     with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
         apps = json.load(f)
 
-    # 收集所有软件信息用于更新 README
     app_info_list = []
 
-    for app_name, repo in apps.items():
-        # 1. 获取仓库信息（用于 README 和 manifest）
+    for app_name, config in apps.items():
+        # 解析配置：字符串 vs 字典
+        if isinstance(config, dict):
+            repo = config.get('repo')
+            custom_bin = config.get('bin')
+        else:
+            repo = config
+            custom_bin = None
+
+        if not repo: continue
+
+        # 1. 获取信息
         repo_info = get_repo_info(repo)
-        description = repo_info.get('description', f'{app_name} - auto-generated') if repo_info else f'{app_name} - auto-generated'
-        
-        # 收集软件信息
+        description = repo_info.get('description') if repo_info else f'{app_name} - auto-generated'
         app_info_list.append((app_name, repo, description))
         
-        # 2. 获取最新 Release 信息
+        # 2. 获取版本
         release_data = get_latest_release(repo)
-        if not release_data:
-            continue
-        
+        if not release_data: continue
         latest_version = release_data['tag_name'].lstrip('v')
         
-        # 3. 检查本地版本
+        # 3. 检查本地版本 (版本号一致则跳过)
         local_file = os.path.join(BUCKET_DIR, f"{app_name}.json")
         if os.path.exists(local_file):
             try:
@@ -237,13 +223,12 @@ def main():
         
         print(f"  [Update] Found new version: {latest_version}")
         
-        # 4. 获取其他仓库信息
+        # 4. 准备 Manifest
         homepage = f"https://github.com/{repo}"
         license_name = 'Unknown'
         if repo_info and repo_info.get('license'):
             license_name = repo_info['license'].get('spdx_id', 'Unknown')
         
-        # 5. 查找多架构资产
         arch_assets = find_assets_by_arch(release_data['assets'])
         if not arch_assets:
             print(f"  [Skip] No suitable Windows asset found for {app_name}")
@@ -251,10 +236,9 @@ def main():
         
         print(f"  [Info] Found architectures: {list(arch_assets.keys())}")
         
-        # 6. 保存 manifest
-        save_manifest(app_name, latest_version, description, homepage, license_name, arch_assets, repo)
+        # 5. 生成文件
+        save_manifest(app_name, latest_version, description, homepage, license_name, arch_assets, custom_bin)
     
-    # 更新 README.md 软件列表
     if app_info_list:
         print("\nUpdating README.md...")
         update_readme(app_info_list)

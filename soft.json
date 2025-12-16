@@ -2,8 +2,11 @@
     "ccNexus": "lich0821/ccNexus",
     "code-switch-R": "Rogers-F/code-switch-R",
     "cc-switch": "farion1231/CC-Switch",
-    "directory-migration-tool":"zhao-wuyan/directory-migration-tool",
-    "octopus":"bestruirui/octopus",
-    "axonhub":"looplj/axonhub",
-    "CLIProxyAPI":"router-for-me/CLIProxyAPI"
+    "directory-migration-tool": "zhao-wuyan/directory-migration-tool",
+    "octopus": "bestruirui/octopus",
+    "axonhub": "looplj/axonhub",
+    "CLIProxyAPI": {
+        "repo": "router-for-me/CLIProxyAPI",
+        "bin": "cli-proxy-api.exe"
+    }
 }
