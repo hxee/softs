@@ -1,0 +1,28 @@
+{
+    "version": "0.0.6",
+    "description": "为个人打造的 LLM API 聚合服务 | 支持多渠道负载均衡、OpenAI/Anthropic 协议互转、Token 消耗与费用统计",
+    "homepage": "https://github.com/bestruirui/octopus",
+    "license": "AGPL-3.0",
+    "architecture": {
+        "32bit": {
+            "url": "https://github.com/bestruirui/octopus/releases/download/v0.0.6/octopus-windows-x86.zip",
+            "hash": "cf4c3b2a06eda0de1f3de74320ef9aa403d93aaee4474642e9117d1e921362bf"
+        },
+        "64bit": {
+            "url": "https://github.com/bestruirui/octopus/releases/download/v0.0.6/octopus-windows-x86_64.zip",
+            "hash": "c74fa3d156dabc9df77f51efd90bde721554af6991f7bfe13be4f32091657180"
+        }
+    },
+    "bin": "octopus.exe",
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "32bit": {
+                "url": "https://github.com/bestruirui/octopus/releases/download/$version/octopus-windows-x86.zip"
+            },
+            "64bit": {
+                "url": "https://github.com/bestruirui/octopus/releases/download/$version/octopus-windows-x86_64.zip"
+            }
+        }
+    }
+}
