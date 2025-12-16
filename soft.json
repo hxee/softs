@@ -4,5 +4,6 @@
     "cc-switch": "farion1231/CC-Switch",
     "directory-migration-tool":"zhao-wuyan/directory-migration-tool",
     "octopus":"bestruirui/octopus",
-    "axonhub":"looplj/axonhub"
+    "axonhub":"looplj/axonhub",
+    "CLIProxyAPI":"router-for-me/CLIProxyAPI"
 }
