@@ -10,6 +10,7 @@
 | code-switch-R | [Rogers-F/code-switch-R](https://github.com/Rogers-F/code-switch-R) | Claude Code & Codex 多供应商代理与管理工具 |
 | cc-switch | [farion1231/CC-Switch](https://github.com/farion1231/CC-Switch) | A cross-platform desktop All-in-One assistant t... |
 | directory-migration-tool | [zhao-wuyan/directory-migration-tool](https://github.com/zhao-wuyan/directory-migration-tool) | 一个使用符号链接迁移大型目录的 Windows 工具，快速将文件夹迁移到其他磁盘，且保留原路径... |
+| octopus | [bestruirui/octopus](https://github.com/bestruirui/octopus) | 为个人打造的 LLM API 聚合服务 | 支持多渠道负载均衡、OpenAI/Anthropi... |
 
 ## 如何使用
 
