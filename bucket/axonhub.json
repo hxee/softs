@@ -1,16 +1,16 @@
 {
-    "version": "0.7.7",
+    "version": "0.7.8",
     "description": "AxonHub is a modern AI gateway system that provides a unified OpenAI ( Chat Completion, Responses), Anthropic, Gemini and AI SDK compatible API",
     "homepage": "https://github.com/looplj/axonhub",
     "license": "MIT",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/looplj/axonhub/releases/download/v0.7.7/axonhub_0.7.7_windows_amd64.zip",
-            "hash": "a3ab05be9c1831e5f079d82dd314112a8375d74c59ddf0169698ce2db984e5e8"
+            "url": "https://github.com/looplj/axonhub/releases/download/v0.7.8/axonhub_0.7.8_windows_amd64.zip",
+            "hash": "cf3d191d944dcb84b8b90aabb127e00912638ba50a92ea71ef1f7da77baffa51"
         },
         "arm64": {
-            "url": "https://github.com/looplj/axonhub/releases/download/v0.7.7/axonhub_0.7.7_windows_arm64.zip",
-            "hash": "a253fd493a2e98d6a15bb8bfbe7bc01bffe0e377d53bf9e1395fcf8da20c5ece"
+            "url": "https://github.com/looplj/axonhub/releases/download/v0.7.8/axonhub_0.7.8_windows_arm64.zip",
+            "hash": "36b653a6aa05504808ec22ccc51d085e7e6f88228f2b13cf784bba6a6a61ecfe"
         }
     },
     "bin": "axonhub.exe",
