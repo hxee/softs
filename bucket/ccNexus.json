@@ -1,16 +1,16 @@
 {
-    "version": "4.9.1",
+    "version": "4.10.0",
     "description": "Intelligent API gateway for Claude Code and Codex CLI - rotate endpoints, monitor usage, and seamlessly integrate OpenAI, Gemini, and other platforms.",
     "homepage": "https://github.com/lich0821/ccNexus",
     "license": "MIT",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/lich0821/ccNexus/releases/download/v4.9.1/ccNexus-v4.9.1-windows-amd64.zip",
-            "hash": "a1ef234026b89752a676b99552b49df04601fb44e050b0d08f721e330e2d986d"
+            "url": "https://github.com/lich0821/ccNexus/releases/download/v4.10.0/ccNexus-v4.10.0-windows-amd64.zip",
+            "hash": "e03a70bc2301448432308eaa3ce80a6bad18f28ed2b7c6f3b122585fc4ee656b"
         },
         "arm64": {
-            "url": "https://github.com/lich0821/ccNexus/releases/download/v4.9.1/ccNexus-v4.9.1-windows-arm64.zip",
-            "hash": "1aee79c2b6fb1cbd29526195f1a11cf925496dcbde72edc9943464211f2bc2cf"
+            "url": "https://github.com/lich0821/ccNexus/releases/download/v4.10.0/ccNexus-v4.10.0-windows-arm64.zip",
+            "hash": "6a3a632e3597816af72d0a35e02aeeec9f116fb0f5fa9c96cf9f73de009c26d1"
         }
     },
     "bin": "ccNexus.exe",
