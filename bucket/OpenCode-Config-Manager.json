@@ -1,0 +1,21 @@
+{
+    "version": "1.1.0",
+    "description": "OCCM是一个Opencode&Oh my opencode配置管理器",
+    "homepage": "https://github.com/icysaintdx/OpenCode-Config-Manager",
+    "license": "MIT",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/icysaintdx/OpenCode-Config-Manager/releases/download/v1.1.0/OpenCodeConfigManager_windows.exe",
+            "hash": "4c7630ca51b1e99a9178e5a1571346481e2d0d17f8e594c1310f4eb336c50850"
+        }
+    },
+    "bin": "OpenCode-Config-Manager.exe",
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/icysaintdx/OpenCode-Config-Manager/releases/download/$version/OpenCodeConfigManager_windows.exe"
+            }
+        }
+    }
+}
