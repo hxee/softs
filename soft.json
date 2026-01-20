@@ -8,6 +8,5 @@
     "CLIProxyAPI": {
         "repo": "router-for-me/CLIProxyAPI",
         "bin": "cli-proxy-api.exe"
-    },
-    "OpenCode-Config-Manager":"icysaintdx/OpenCode-Config-Manager"
+    }
 }
