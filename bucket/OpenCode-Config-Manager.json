@@ -1,12 +1,12 @@
 {
-    "version": "1.1.7",
-    "description": "OCCM是一个Opencode&Oh my opencode配置管理器",
+    "version": "1.4.5",
+    "description": "OpenCode Config Manager (OCCM) 是一款专为 OpenCode 和 Oh My OpenCode 设计的可视化配置管理工具。OpenCode Config Manager (OCCM) is a visual configuration management tool specifically designed for OpenCode and Oh My OpenCode.",
     "homepage": "https://github.com/icysaintdx/OpenCode-Config-Manager",
     "license": "MIT",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/icysaintdx/OpenCode-Config-Manager/releases/download/v1.1.7/OCCM_v1.1.7-Windows-x64.exe",
-            "hash": "50054a7ab651c8e395f5c8712e16188693f3a90a40754a3bd3a467ecf80c09d6"
+            "url": "https://github.com/icysaintdx/OpenCode-Config-Manager/releases/download/v1.4.5/OCCM_v1.4.5-Windows-x64.exe",
+            "hash": "5a559159265fef25c57c2876f6111f75f486aabc377a484923bb439132aefbf8"
         }
     },
     "bin": "OpenCode-Config-Manager.exe",
