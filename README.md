@@ -13,7 +13,6 @@
 | octopus | [bestruirui/octopus](https://github.com/bestruirui/octopus) | One Hub All LLMs For You | 为个人打造的 LLM API 聚合服务 |
 | axonhub | [looplj/axonhub](https://github.com/looplj/axonhub) | AxonHub is a modern AI gateway system that prov... |
 | CLIProxyAPI | [router-for-me/CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) | Wrap Gemini CLI, Antigravity, ChatGPT Codex, Cl... |
-| OpenCode-Config-Manager | [icysaintdx/OpenCode-Config-Manager](https://github.com/icysaintdx/OpenCode-Config-Manager) | OpenCode Config Manager (OCCM) 是一款专为 OpenCode 和... |
 
 ## 如何使用
 
