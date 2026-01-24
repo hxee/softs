@@ -1,16 +1,16 @@
 {
-    "version": "0.9.5",
+    "version": "0.9.6",
     "description": "One Hub All LLMs For You | 为个人打造的 LLM API 聚合服务",
     "homepage": "https://github.com/bestruirui/octopus",
     "license": "AGPL-3.0",
     "architecture": {
         "32bit": {
-            "url": "https://github.com/bestruirui/octopus/releases/download/v0.9.5/octopus-windows-x86.zip",
-            "hash": "7d3d4a3590cd4285602a537acabe42e237ed64670109a71b73214626735f7bfc"
+            "url": "https://github.com/bestruirui/octopus/releases/download/v0.9.6/octopus-windows-x86.zip",
+            "hash": "4791da00beb5b1e8a1d201e79894dcde8e4784a93c4866086cba70c525fd930b"
         },
         "64bit": {
-            "url": "https://github.com/bestruirui/octopus/releases/download/v0.9.5/octopus-windows-x86_64.zip",
-            "hash": "d8c0e7f884b1e95191988bf8f968b06c6ea4ba7318be79e7003fedda433dae6d"
+            "url": "https://github.com/bestruirui/octopus/releases/download/v0.9.6/octopus-windows-x86_64.zip",
+            "hash": "5d05a6a259b5c704961e8569abb94bf4c2ff59e1b782268e5e863fe883aba03b"
         }
     },
     "bin": "octopus.exe",
