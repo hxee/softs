@@ -11,7 +11,7 @@
 | cc-switch | [farion1231/CC-Switch](https://github.com/farion1231/CC-Switch) | A cross-platform desktop All-in-One assistant t... |
 | directory-migration-tool | [zhao-wuyan/directory-migration-tool](https://github.com/zhao-wuyan/directory-migration-tool) | 一个使用符号链接迁移大型目录的 Windows 工具，快速将文件夹迁移到其他磁盘，且保留原路径... |
 | octopus | [bestruirui/octopus](https://github.com/bestruirui/octopus) | One Hub All LLMs For You | 为个人打造的 LLM API 聚合服务 |
-| axonhub | [looplj/axonhub](https://github.com/looplj/axonhub) | AxonHub is a modern AI gateway system that prov... |
+| axonhub | [looplj/axonhub](https://github.com/looplj/axonhub) | ⚡️ Open-source AI Gateway — Use any SDK to call... |
 | CLIProxyAPI | [router-for-me/CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) | Wrap Gemini CLI, Antigravity, ChatGPT Codex, Cl... |
 
 ## 如何使用
