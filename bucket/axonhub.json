@@ -1,16 +1,16 @@
 {
-    "version": "0.9.5",
+    "version": "0.9.6",
     "description": "⚡️ Open-source AI Gateway — Use any SDK to call 100+ LLMs. Built-in failover, load balancing, cost control & end-to-end tracing.",
     "homepage": "https://github.com/looplj/axonhub",
     "license": "NOASSERTION",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/looplj/axonhub/releases/download/v0.9.5/axonhub_0.9.5_windows_amd64.zip",
-            "hash": "e42e1011c40fce82055b6b48803c3b8d68f02ebec486962b06e54b25e9523046"
+            "url": "https://github.com/looplj/axonhub/releases/download/v0.9.6/axonhub_0.9.6_windows_amd64.zip",
+            "hash": "5416d747e8073208fe331ec910eadb50c38dbecb2f998023d6fb26bbcd4f7a59"
         },
         "arm64": {
-            "url": "https://github.com/looplj/axonhub/releases/download/v0.9.5/axonhub_0.9.5_windows_arm64.zip",
-            "hash": "d051bb21e2289ac9a4682571b50faae58340f69829aea416db063101b5037dae"
+            "url": "https://github.com/looplj/axonhub/releases/download/v0.9.6/axonhub_0.9.6_windows_arm64.zip",
+            "hash": "e86da0526daeaf1415f9052b5acf9c5d2ebd7d5a6aff7439ffa1595606713664"
         }
     },
     "bin": "axonhub.exe",
