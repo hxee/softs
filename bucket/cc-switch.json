@@ -1,16 +1,16 @@
 {
-    "version": "3.16.5",
+    "version": "3.17.0",
     "description": "A cross-platform desktop All-in-One assistant for Claude Code, Codex, OpenCode, OpenClaw, Gemini CLI & Hermes Agent. Only official website: ccswitch.io",
     "homepage": "https://github.com/farion1231/CC-Switch",
     "license": "MIT",
     "architecture": {
         "arm64": {
-            "url": "https://github.com/farion1231/cc-switch/releases/download/v3.16.5/CC-Switch-v3.16.5-Windows-arm64-Portable.zip",
-            "hash": "402fea4ebc6539ab5acf3f0976162bda1f59b35ca9ea787afe6fbc92eb28a708"
+            "url": "https://github.com/farion1231/cc-switch/releases/download/v3.17.0/CC-Switch-v3.17.0-Windows-arm64-Portable.zip",
+            "hash": "8a5d28a8f7db96cedb42daeab1ea64a5766f0dd34a9150f290ae1428562ccacb"
         },
         "64bit": {
-            "url": "https://github.com/farion1231/cc-switch/releases/download/v3.16.5/CC-Switch-v3.16.5-Windows-Portable.zip",
-            "hash": "bfacdd5482d917a3c363e2a56b554935b32ceb5ae4b37453e8fab09fda329498"
+            "url": "https://github.com/farion1231/cc-switch/releases/download/v3.17.0/CC-Switch-v3.17.0-Windows-Portable.zip",
+            "hash": "5b42f100ec654c608feadd683c9a8117b026ad301b43467cb248ea5173adda41"
         }
     },
     "bin": "cc-switch.exe",
