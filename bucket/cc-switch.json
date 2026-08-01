@@ -1,16 +1,16 @@
 {
-    "version": "3.19.0",
+    "version": "3.19.1",
     "description": "A cross-platform desktop All-in-One assistant for Claude Code, Codex, OpenCode, OpenClaw, Grok Build & Hermes Agent. Only official website: ccswitch.io",
     "homepage": "https://github.com/farion1231/CC-Switch",
     "license": "MIT",
     "architecture": {
         "arm64": {
-            "url": "https://github.com/farion1231/cc-switch/releases/download/v3.19.0/CC-Switch-v3.19.0-Windows-arm64-Portable.zip",
-            "hash": "da9d9c1bdf19793db6f91022b7c42181792885a081c3b5cfa7f8dcf5acd9a15d"
+            "url": "https://github.com/farion1231/cc-switch/releases/download/v3.19.1/CC-Switch-v3.19.1-Windows-arm64-Portable.zip",
+            "hash": "492e03ccf529aa517555e2f6db479d96068cef5e9d17638c6f8255defaec841e"
         },
         "64bit": {
-            "url": "https://github.com/farion1231/cc-switch/releases/download/v3.19.0/CC-Switch-v3.19.0-Windows-Portable.zip",
-            "hash": "a19b0945b055d6b980ebc2c4c2b74a81539d43fca835567fc36fae667be0be15"
+            "url": "https://github.com/farion1231/cc-switch/releases/download/v3.19.1/CC-Switch-v3.19.1-Windows-Portable.zip",
+            "hash": "aaefbadc03e6a9d4797d22ef22214a050bce1d8a0d73583bb407ac001ab92f5e"
         }
     },
     "bin": "cc-switch.exe",
