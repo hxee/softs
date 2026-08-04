@@ -1,12 +1,12 @@
 {
-    "version": "2.6.40",
+    "version": "2.6.43",
     "description": "Claude Code & Codex 多供应商代理与管理工具",
     "homepage": "https://github.com/Rogers-F/code-switch-R",
     "license": "Apache-2.0",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/Rogers-F/code-switch-R/releases/download/v2.6.40/CodeSwitch-v2.6.40-amd64-installer.exe",
-            "hash": "f909e03a61750fe66c0c6ab6a6c51913c053af530d06dc23b280c6bd4c75b9d5"
+            "url": "https://github.com/Rogers-F/code-switch-R/releases/download/v2.6.43/CodeSwitch-v2.6.43-amd64-installer.exe",
+            "hash": "9563435fbebeb33152dc92bb111ff1657c9b6c24d9e64d41bfe1e26d4be7f457"
         }
     },
     "bin": "code-switch-R.exe",
