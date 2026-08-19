@@ -1,20 +1,20 @@
 {
-    "version": "0.10.2",
+    "version": "0.10.3",
     "description": "One Hub All LLMs For You | 为个人打造的 LLM API 聚合网关",
     "homepage": "https://github.com/bestruirui/octopus",
     "license": "AGPL-3.0",
     "architecture": {
         "32bit": {
-            "url": "https://github.com/bestruirui/octopus/releases/download/v0.10.2/octopus-android-386.zip",
-            "hash": "7852934853bac84de5e9fe9e5a30cc6a724b3c8263bfbb78789f39e86e832493"
+            "url": "https://github.com/bestruirui/octopus/releases/download/v0.10.3/octopus-android-386.zip",
+            "hash": "947f08963acc2ddcd7fd5012200be8b8c8a0cf50a5d7c762ae2f627d51abfb7d"
         },
         "64bit": {
-            "url": "https://github.com/bestruirui/octopus/releases/download/v0.10.2/octopus-android-amd64.zip",
-            "hash": "2a6385787405eb19742e672372e2e9520e94d9a4a11999643f85079287144a4f"
+            "url": "https://github.com/bestruirui/octopus/releases/download/v0.10.3/octopus-android-amd64.zip",
+            "hash": "e1431f26c324c83aa94946283aff95a11c68882f7944937529322b0c2def346d"
         },
         "arm64": {
-            "url": "https://github.com/bestruirui/octopus/releases/download/v0.10.2/octopus-android-arm64.zip",
-            "hash": "9a05f003853d95c21ea1483e05a899163eb450807e5513153a45752dab1699fd"
+            "url": "https://github.com/bestruirui/octopus/releases/download/v0.10.3/octopus-android-arm64.zip",
+            "hash": "10a9c3d38c8e4093de235668af04aaa8605073fde2191209bb6801455609f431"
         }
     },
     "bin": "octopus.exe",
