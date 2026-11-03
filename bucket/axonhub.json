@@ -1,16 +1,16 @@
 {
-    "version": "1.0.0-beta11",
+    "version": "1.0.0-beta12",
     "description": "⚡️ Open-source AI Gateway — Use any SDK to call 100+ LLMs. Built-in failover, load balancing, cost control & end-to-end tracing.",
     "homepage": "https://github.com/looplj/axonhub",
     "license": "Apache-2.0",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/looplj/axonhub/releases/download/v1.0.0-beta11/axonhub_1.0.0-beta11_freebsd_amd64.zip",
-            "hash": "3874c98e71eebb58d22e5e9511a0764efe7d300264cc8ee932749ffbd50651d5"
+            "url": "https://github.com/looplj/axonhub/releases/download/v1.0.0-beta12/axonhub_1.0.0-beta12_freebsd_amd64.zip",
+            "hash": "6a9c8ab21e882dd0fd7dfa5e65b7b2cde3bbe4ccf18c9b403f23e53d02c58405"
         },
         "arm64": {
-            "url": "https://github.com/looplj/axonhub/releases/download/v1.0.0-beta11/axonhub_1.0.0-beta11_freebsd_arm64.zip",
-            "hash": "237e0095f0321c61394b00d26126bd8498d401da2ba00000d0e3cfd17aea495c"
+            "url": "https://github.com/looplj/axonhub/releases/download/v1.0.0-beta12/axonhub_1.0.0-beta12_freebsd_arm64.zip",
+            "hash": "f0e565706e01608484bcb2a9996abbc2edc3123a4dc787ed3f28fff92189e065"
         }
     },
     "bin": "axonhub.exe",
@@ -18,10 +18,10 @@
     "autoupdate": {
         "architecture": {
             "64bit": {
-                "url": "https://github.com/looplj/axonhub/releases/download/$version-beta11/axonhub_$version-beta11_freebsd_amd64.zip"
+                "url": "https://github.com/looplj/axonhub/releases/download/$version-beta12/axonhub_$version-beta12_freebsd_amd64.zip"
             },
             "arm64": {
-                "url": "https://github.com/looplj/axonhub/releases/download/$version-beta11/axonhub_$version-beta11_freebsd_arm64.zip"
+                "url": "https://github.com/looplj/axonhub/releases/download/$version-beta12/axonhub_$version-beta12_freebsd_arm64.zip"
             }
         }
     }
